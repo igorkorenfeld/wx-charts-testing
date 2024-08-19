@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Testing apex charts</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <h1> Testing scripts </h1>
+    <!-- <div id="chart" style="max-width: 960px"></div> -->
+    <div id="temp-chart" style="max-width: 960px; max-height: 320px"></div>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script> 
+      var options = {
+        chart: {
+          type: 'line'
+        },
+        series: [{
+          name: 'sales',
+          data: [30,40,35,50,49,60,70,91,125]
+        }],
+        xaxis: {
+          categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999]
+        }
+      }
+
+      var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+      // chart.render();
+
+      const themeColors = {
+        base: {
+          lighter: '#DFE1E2',
+          base: '#71767A',
+        },
+        primary: {
+          light: '#0085CA',
+          dark: '#0B4778',
+        }
+      }
+      const twentyFiveHours = ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','8p','9p','10p','11p','12a','1a','2a','3a','4a','5a','6a'];
+
+      const temperatures = [45,46,48,48,50,50,51,50,48,45,42,42,40,43,42,45,44,42,43,41,41,44,41,45]
+      const feelsLike = [43,42,48,44,49,50,48,46,44,45,38,42,40,43,39,42,42,40,42,40,41,41,38,42] 
+      console.log("max", Math.round(Math.max(...temperatures) / 10 ) * 10);
+      console.log("min", Math.round(Math.min(...temperatures) / 10 ) * 10);
+
+      function getAxisExtents(data) {
+        return {
+          max: Math.round(Math.max(...data) / 10 ) * 10 + 10,  
+          min: Math.round(Math.min(...data) / 10 ) * 10 - 10,  
+        }
+      }
+
+      const tempChartOptions = {
+        chart: {
+          type: 'line',
+          height: '320',
+          fontFamily: '"DM Mono", "Roboto Mono Web", "Courier New", monospace, serif',
+        },
+        series: [{
+          name: 'Tempeartures',
+          data: temperatures,
+          zIndex: 2,
+        }, 
+        {
+          name: 'Feels like',
+          data: feelsLike,
+          zIndex: 1,
+        }],
+        xaxis: {
+          axisTicks: {show: false },
+          type: 'category',
+          categories: twentyFiveHours,
+          labels:{
+            style: {
+              colors: themeColors.base.base,
+            }
+          },
+        },
+        yaxis: {
+          labels:{
+            formatter: (value) => value + '°',
+            style: {
+              colors: themeColors.base.base,
+            }
+          },
+          min: getAxisExtents(temperatures).min, 
+          max: getAxisExtents(temperatures).max, 
+        },
+        markers: {
+          size: 3,
+          strokeWidth: 0,
+
+        },
+        stroke: {
+          width: [2, 2],
+          dashArray: [0, 4]
+        },
+        colors: [themeColors.primary.dark, themeColors.primary.light],
+        grid: {
+          borderColor: themeColors.base.lighter, 
+          xaxis: {
+            lines: {
+              show: true
+            },
+          },
+          yaxis: {
+            lines: {
+              show: true
+            },
+          }
+        },
+        legend: {
+          horizontalAlign: 'left',
+          markers: {
+            size: 3,
+          }
+        },
+        responsive: [{
+          breakpoint: 680,
+          options: {
+            series: [{
+              name: 'Tempeartures',
+              data: temperatures.slice(0, 12),
+              zIndex: 2,
+            },{
+              name: 'Feels like',
+              data: feelsLike.slice(0,12),
+              zIndex: 1,
+            }],
+            xaxis: {
+              axisTicks: {show: false },
+              type: 'category',
+              categories: twentyFiveHours.slice(0,12),
+            }
+          },
+        }]
+      }
+
+      const tempChart = new ApexCharts(document.querySelector("#temp-chart"), tempChartOptions);
+
+      tempChart.render();
+
+    </script>
+    <p> end testing </p>
+  </body>
+</html>
