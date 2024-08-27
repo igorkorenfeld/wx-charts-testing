@@ -12,27 +12,11 @@
   </head>
   <body>
     <h1> Testing scripts </h1>
-    <!-- <div id="chart" style="max-width: 960px"></div> -->
     <div id="temp-chart" style="max-width: 960px; max-height: 320px"></div>
+    <div id="wind-chart" style="max-width: 960px; max-height: 320px"></div>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script> 
-      var options = {
-        chart: {
-          type: 'line'
-        },
-        series: [{
-          name: 'sales',
-          data: [30,40,35,50,49,60,70,91,125]
-        }],
-        xaxis: {
-          categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999]
-        }
-      }
-
-      var chart = new ApexCharts(document.querySelector("#chart"), options);
-
-      // chart.render();
 
       const themeColors = {
         base: {
@@ -44,12 +28,14 @@
           dark: '#0B4778',
         }
       }
+
       const twentyFiveHours = ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','8p','9p','10p','11p','12a','1a','2a','3a','4a','5a','6a'];
 
-      const temperatures = [45,46,48,48,50,50,51,50,48,45,42,42,40,43,42,45,44,42,43,41,41,44,41,45]
-      const feelsLike = [43,42,48,44,49,50,48,46,44,45,38,42,40,43,39,42,42,40,42,40,41,41,38,42] 
-      console.log("max", Math.round(Math.max(...temperatures) / 10 ) * 10);
-      console.log("min", Math.round(Math.min(...temperatures) / 10 ) * 10);
+      const temperatures = [45,46,48,48,50,50,51,50,48,45,42,42,40,43,42,45,44,42,43,41,41,44,41,45];
+      const feelsLike = [43,42,48,44,49,50,48,46,44,45,38,42,40,43,39,42,42,40,42,40,41,41,38,42]; 
+
+      const windSpeeds = [10,15,15,15,20,15,15,10,10,15,10,5,0,0,5,8,8,10,12,15,12,15,8,8,5];
+      const gusts = [20,20,20,25,30,25,25,20,20,25,20,15,10,10,15,20,20,20,20,null,null,null,null,null,null];
 
       function getAxisExtents(data) {
         return {
@@ -58,10 +44,58 @@
         }
       }
 
+      const chartBaseOptions = {
+        chart: {
+          height: '240',
+          fontFamily: '"DM Mono", "Roboto Mono Web", "Courier New", monospace, serif',
+        },
+        xaxis: {
+          axisTicks: {show: false },
+          type: 'category',
+          categories: twentyFiveHours,
+          labels:{
+            style: {
+              colors: themeColors.base.base,
+            }
+          },
+        },
+        markers: {
+          size: 3,
+          strokeWidth: 0,
+          hover: {
+            sizeOffset: 2,
+          },
+        },
+        stroke: {
+          width: 2,
+          dashArray: [0, 4]
+        },
+        colors: [themeColors.primary.dark, themeColors.primary.light],
+        grid: {
+          borderColor: themeColors.base.lighter, 
+          xaxis: {
+            lines: {
+              show: true
+            },
+          },
+          yaxis: {
+            lines: {
+              show: true
+            },
+          }
+        },
+        legend: {
+          horizontalAlign: 'left',
+          markers: {
+            size: 3,
+          }
+        },
+      }
+
       const tempChartOptions = {
         chart: {
           type: 'line',
-          height: '320',
+          height: '240',
           fontFamily: '"DM Mono", "Roboto Mono Web", "Courier New", monospace, serif',
         },
         series: [{
@@ -97,7 +131,9 @@
         markers: {
           size: 3,
           strokeWidth: 0,
-
+          hover: {
+            sizeOffset: 2,
+          },
         },
         stroke: {
           width: [2, 2],
@@ -144,9 +180,37 @@
         }]
       }
 
-      const tempChart = new ApexCharts(document.querySelector("#temp-chart"), tempChartOptions);
+      const windChartOptions = Object.assign({}, chartBaseOptions, {
+        chart: {
+          type: 'line',
+        },
+        series: [{
+          name: 'Wind speed',
+          data: windSpeeds,
+          zIndex: 2,
+        }, 
+        {
+          name: 'Gusts',
+          data: gusts,
+          zIndex: 1,
+        }],
+        yaxis: {
+          labels:{
+            style: {
+              colors: themeColors.base.base,
+            }
+          },
+          min: 0, 
+          max: getAxisExtents(windSpeeds).max, 
+        },
+      });
 
+
+      const tempChart = new ApexCharts(document.querySelector("#temp-chart"), tempChartOptions);
       tempChart.render();
+
+      const windChart = new ApexCharts(document.querySelector("#wind-chart"), windChartOptions); 
+      windChart.render();
 
     </script>
     <p> end testing </p>
